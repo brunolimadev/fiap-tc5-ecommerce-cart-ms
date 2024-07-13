@@ -12,7 +12,7 @@ import static br.com.fiap.ecommerce_cart_ms.utils.MessageEnumUtils.*;
 
 
 @ControllerAdvice
-public class ItemControllerAdvice {
+public class CartControllerAdvice {
 
   @ExceptionHandler(
           {

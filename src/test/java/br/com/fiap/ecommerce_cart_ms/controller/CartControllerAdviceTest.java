@@ -14,7 +14,7 @@ class CartControllerAdviceTest {
   void shouldHandleBadRequestWithDomainException() {
 
     //Arrange
-    var itemControllerAdvice = new ItemControllerAdvice();
+    var itemControllerAdvice = new CartControllerAdvice();
     var exception = new EntityException("Error");
 
     //Act
@@ -30,7 +30,7 @@ class CartControllerAdviceTest {
   void shouldHandleBadRequestWithSpringException() {
 
     //Arrange
-    var itemControllerAdvice = new ItemControllerAdvice();
+    var itemControllerAdvice = new CartControllerAdvice();
     var exception = new HttpMessageNotReadableException("Error");
 
     //Act
@@ -46,7 +46,7 @@ class CartControllerAdviceTest {
   void shouldHandleUnProcessableEntity() {
 
     //Arrange
-    var itemControllerAdvice = new ItemControllerAdvice();
+    var itemControllerAdvice = new CartControllerAdvice();
     var exception = new OutputPortException("Error");
 
     //Act
