@@ -1,5 +1,6 @@
 package br.com.fiap.ecommerce_cart_ms.adapter.ports.outputport;
 
+import br.com.fiap.ecommerce_cart_ms.adapter.model.SessionModel;
 import br.com.fiap.ecommerce_cart_ms.ports.outputport.SessionManagementOutputPort;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -26,7 +27,13 @@ public class SessionManagementOutputPortAdapter implements SessionManagementOutp
 
     Mono<Object> response = client.put()
             .uri("/ecommerce-management/api/v1/sessions")
-            .body(BodyInserters.fromValue(object))
+            .body(BodyInserters.fromValue(
+                    SessionModel.builder()
+                            .sessionId(sessionId)
+                            .objectKey("shopping_cart")
+                            .sessionData(object)
+                            .build()
+            ))
             .retrieve()
             .bodyToMono(Object.class);
 
