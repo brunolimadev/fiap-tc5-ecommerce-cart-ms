@@ -7,8 +7,8 @@ import br.com.fiap.ecommerce_cart_ms.ports.exception.OutputPortException;
 
 public interface CartManagementOutputPort {
 
-  CartEntity addCartItem(ItemEntity itemEntity) throws OutputPortException;
+  CartEntity addCartItem(ItemEntity itemEntity, String sessionId) throws OutputPortException;
 
-  CartEntity removeCartItem(Long id) throws OutputPortException;
+  CartEntity removeCartItem(Long id, String sessionId) throws OutputPortException;
   
 }

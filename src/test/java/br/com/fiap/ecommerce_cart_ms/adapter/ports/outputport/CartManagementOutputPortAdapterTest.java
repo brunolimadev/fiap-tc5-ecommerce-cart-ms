@@ -4,6 +4,7 @@ import br.com.fiap.ecommerce_cart_ms.domain.entities.CartEntity;
 import br.com.fiap.ecommerce_cart_ms.mock.ItemEntityMock;
 import br.com.fiap.ecommerce_cart_ms.ports.outputport.CartManagementOutputPort;
 import br.com.fiap.ecommerce_cart_ms.ports.outputport.ItemManagementOutputPort;
+import br.com.fiap.ecommerce_cart_ms.ports.outputport.SessionManagementOutputPort;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,9 @@ class CartManagementOutputPortAdapterTest {
   @Mock
   private ItemManagementOutputPort itemManagementOutputPort;
 
+  @Mock
+  private SessionManagementOutputPort sessionManagementOutputPort;
+
   private CartManagementOutputPort cartManagementOutputPort;
   private AutoCloseable openMocks;
 
@@ -24,7 +28,9 @@ class CartManagementOutputPortAdapterTest {
   void setup() {
 
     openMocks = MockitoAnnotations.openMocks(this);
-    cartManagementOutputPort = new CartManagementOutputPortAdapter(itemManagementOutputPort);
+    cartManagementOutputPort = new CartManagementOutputPortAdapter(
+            itemManagementOutputPort,
+            sessionManagementOutputPort);
 
   }
 
@@ -39,7 +45,7 @@ class CartManagementOutputPortAdapterTest {
   void shouldAddCartItemWithSuccess() {
 
     //Act
-    var response = cartManagementOutputPort.addCartItem(ItemEntityMock.get());
+    var response = cartManagementOutputPort.addCartItem(ItemEntityMock.get(), "");
 
     //Assert
     assertThat(response)
@@ -59,7 +65,7 @@ class CartManagementOutputPortAdapterTest {
     var itemEntityId = itemEntity.getId();
 
     //Act
-    var response = cartManagementOutputPort.removeCartItem(itemEntityId);
+    var response = cartManagementOutputPort.removeCartItem(itemEntityId, "");
 
     //Assert
     assertThat(response)

@@ -50,7 +50,7 @@ class CartControllerTest {
   void shouldCreateItemWithSuccess() throws Exception {
 
     //Arrange
-    given(cartManagementOutputPort.addCartItem(ItemEntityMock.get())).willAnswer(invocation -> invocation.getArgument(0));
+    given(cartManagementOutputPort.addCartItem(ItemEntityMock.get(), "")).willAnswer(invocation -> invocation.getArgument(0));
 
     //Act
     var response = mockMvc.perform(post("http://localhost:8080/cart")
@@ -68,7 +68,7 @@ class CartControllerTest {
 
     //Arrange
     var cartEntityId = itemEntity.getId();
-    when(cartManagementOutputPort.removeCartItem(cartEntityId)).thenReturn(cartEntity);
+    when(cartManagementOutputPort.removeCartItem(cartEntityId, "")).thenReturn(cartEntity);
 
     //Act
     var response = mockMvc.perform(delete("http://localhost:8080/cart/1")

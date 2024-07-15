@@ -7,6 +7,7 @@ import br.com.fiap.ecommerce_cart_ms.domain.exception.EntityException;
 import br.com.fiap.ecommerce_cart_ms.ports.exception.OutputPortException;
 import br.com.fiap.ecommerce_cart_ms.ports.outputport.CartManagementOutputPort;
 import br.com.fiap.ecommerce_cart_ms.ports.outputport.ItemManagementOutputPort;
+import br.com.fiap.ecommerce_cart_ms.ports.outputport.SessionManagementOutputPort;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,17 +19,23 @@ public class CartManagementOutputPortAdapter implements CartManagementOutputPort
 
   private static final List<ItemEntity> items = new ArrayList<>();
   private final ItemManagementOutputPort itemManagementOutputPort;
+  private final SessionManagementOutputPort sessionManagementOutputPort;
 
-  public CartManagementOutputPortAdapter(ItemManagementOutputPort itemManagementOutputPort) {
+  public CartManagementOutputPortAdapter(
+          ItemManagementOutputPort itemManagementOutputPort,
+          SessionManagementOutputPort sessionManagementOutputPort) {
 
     this.itemManagementOutputPort = itemManagementOutputPort;
+    this.sessionManagementOutputPort = sessionManagementOutputPort;
 
   }
 
   @Override
-  public CartEntity addCartItem(ItemEntity itemEntity) throws OutputPortException {
+  public CartEntity addCartItem(ItemEntity itemEntity, String sessionId) throws OutputPortException {
 
     try {
+
+      validateActiveSession(sessionManagementOutputPort.getSession(sessionId));
 
       var itemModel = itemManagementOutputPort.getItem(itemEntity.getId());
 
@@ -36,7 +43,11 @@ public class CartManagementOutputPortAdapter implements CartManagementOutputPort
 
       updateItemAndAddItemsList(itemModel, itemEntity);
 
-      return CartEntity.builder().totalOrder(calculateTotalOrder()).items(items).build();
+      var response = CartEntity.builder().totalOrder(calculateTotalOrder()).items(items).build();
+
+      sessionManagementOutputPort.updateSession(sessionId, response);
+
+      return response;
 
     } catch (EntityException | OutputPortException exception) {
 
@@ -51,19 +62,35 @@ public class CartManagementOutputPortAdapter implements CartManagementOutputPort
   }
 
   @Override
-  public CartEntity removeCartItem(Long id) throws OutputPortException {
+  public CartEntity removeCartItem(Long id, String sessionId) throws OutputPortException {
 
     try {
+
+      validateActiveSession(sessionManagementOutputPort.getSession(sessionId));
 
       var itemModel = itemManagementOutputPort.getItem(id);
 
       updateItemAndRemoveItemsList(id, itemModel);
 
-      return CartEntity.builder().totalOrder(calculateTotalOrder()).items(items).build();
+      var response = CartEntity.builder().totalOrder(calculateTotalOrder()).items(items).build();
+
+      sessionManagementOutputPort.updateSession(sessionId, response);
+
+      return response;
 
     } catch (Exception exception) {
 
       throw new OutputPortException(ITEM_MANAGEMENT_REMOVE_ITEM_OUTPUT_PORT_EXCEPTION.getMessage());
+
+    }
+
+  }
+
+  private void validateActiveSession(Object object) {
+
+    if (object == null) {
+
+      throw new OutputPortException("Usuario com sessao inativa");
 
     }
 
