@@ -37,11 +37,11 @@ public class CartManagementOutputPortAdapter implements CartManagementOutputPort
 
       validateActiveSession(sessionManagementOutputPort.getSession(sessionId));
 
-      var itemModel = itemManagementOutputPort.getItem(itemEntity.getId());
+      var itemModel = itemManagementOutputPort.getItem(itemEntity.getId(), sessionId);
 
       validateStoreQuantityAndCardItemQuantity(itemModel, itemEntity);
 
-      updateItemAndAddItemsList(itemModel, itemEntity);
+      updateItemAndAddItemsList(itemModel, itemEntity, sessionId);
 
       var response = CartEntity.builder().totalOrder(calculateTotalOrder()).items(items).build();
 
@@ -68,9 +68,9 @@ public class CartManagementOutputPortAdapter implements CartManagementOutputPort
 
       validateActiveSession(sessionManagementOutputPort.getSession(sessionId));
 
-      var itemModel = itemManagementOutputPort.getItem(id);
+      var itemModel = itemManagementOutputPort.getItem(id, sessionId);
 
-      updateItemAndRemoveItemsList(id, itemModel);
+      updateItemAndRemoveItemsList(id, itemModel, sessionId);
 
       var response = CartEntity.builder().totalOrder(calculateTotalOrder()).items(items).build();
 
@@ -110,11 +110,11 @@ public class CartManagementOutputPortAdapter implements CartManagementOutputPort
 
   }
 
-  private void updateItemAndAddItemsList(ItemModel itemModel, ItemEntity itemEntity) {
+  private void updateItemAndAddItemsList(ItemModel itemModel, ItemEntity itemEntity, String sessionId) {
 
     itemModel.setStoreQuantity(itemModel.getStoreQuantity() - itemEntity.getQuantity());
 
-    itemManagementOutputPort.updateItem(itemEntity.getId(), itemModel);
+    itemManagementOutputPort.updateItem(itemEntity.getId(), itemModel, sessionId);
 
     var cardItem = ItemEntity.builder()
             .id(itemModel.getId())
@@ -127,7 +127,7 @@ public class CartManagementOutputPortAdapter implements CartManagementOutputPort
 
   }
 
-  private void updateItemAndRemoveItemsList(Long id, ItemModel itemModel) {
+  private void updateItemAndRemoveItemsList(Long id, ItemModel itemModel, String sessionId) {
 
     assert itemModel != null;
 
@@ -142,7 +142,7 @@ public class CartManagementOutputPortAdapter implements CartManagementOutputPort
 
     itemModel.setStoreQuantity(itemModel.getStoreQuantity() + removeItem.getQuantity());
 
-    itemManagementOutputPort.updateItem(id, itemModel);
+    itemManagementOutputPort.updateItem(id, itemModel,sessionId);
 
   }
 

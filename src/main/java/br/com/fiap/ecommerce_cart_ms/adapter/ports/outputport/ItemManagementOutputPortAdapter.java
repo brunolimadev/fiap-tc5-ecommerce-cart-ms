@@ -9,12 +9,14 @@ import reactor.core.publisher.Mono;
 public class ItemManagementOutputPortAdapter implements ItemManagementOutputPort {
 
   private final WebClient client = WebClient.create("http://localhost:8082");
+  private static final String SESSION_ID_HEADER = "session-id";
 
   @Override
-  public ItemModel getItem(Long id) {
+  public ItemModel getItem(Long id, String sessionId) {
 
     Mono<ItemModel> response = client.get()
             .uri("/ecommerce-management/api/v1/items/{id}", id)
+            .header(SESSION_ID_HEADER, sessionId)
             .retrieve()
             .bodyToMono(ItemModel.class);
 
@@ -23,10 +25,11 @@ public class ItemManagementOutputPortAdapter implements ItemManagementOutputPort
   }
 
   @Override
-  public void updateItem(Long id, ItemModel itemModel) {
+  public void updateItem(Long id, ItemModel itemModel, String sessionId) {
 
     Mono<ItemModel> response = client.put()
             .uri("/ecommerce-management/api/v1/items/{id}", id)
+            .header(SESSION_ID_HEADER, sessionId)
             .body(BodyInserters.fromValue(itemModel))
             .retrieve()
             .bodyToMono(ItemModel.class);

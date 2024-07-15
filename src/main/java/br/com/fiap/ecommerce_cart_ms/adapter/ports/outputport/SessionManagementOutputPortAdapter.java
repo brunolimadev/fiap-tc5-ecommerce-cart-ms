@@ -9,14 +9,12 @@ import reactor.core.publisher.Mono;
 public class SessionManagementOutputPortAdapter implements SessionManagementOutputPort {
 
   private final WebClient client = WebClient.create("http://localhost:8085");
-  private static final String SESSION_ID_HEADER = "session-id";
 
   @Override
   public Object getSession(String sessionId) {
 
     Mono<Object> response = client.get()
             .uri("/ecommerce-management/api/v1/sessions/{id}", sessionId)
-            .header(SESSION_ID_HEADER, sessionId)
             .retrieve()
             .bodyToMono(Object.class);
 
@@ -29,7 +27,6 @@ public class SessionManagementOutputPortAdapter implements SessionManagementOutp
 
     Mono<Object> response = client.put()
             .uri("/ecommerce-management/api/v1/sessions")
-            .header(SESSION_ID_HEADER, sessionId)
             .body(BodyInserters.fromValue(
                     SessionModel.builder()
                             .sessionId(sessionId)
