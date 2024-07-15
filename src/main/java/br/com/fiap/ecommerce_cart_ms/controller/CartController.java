@@ -44,7 +44,7 @@ public class CartController {
   }
 
   @Operation(summary = "Remove cart item by id")
-  @ApiResponse(responseCode = "200", description = "Returns a removed item")
+  @ApiResponse(responseCode = "200", description = "Returns a updated cart")
   @DeleteMapping(value = "{item_id}")
   public ResponseEntity<CartEntity> removeCartItem(
           @PathVariable("item_id") Long id,
