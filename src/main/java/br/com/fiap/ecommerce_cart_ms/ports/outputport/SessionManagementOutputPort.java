@@ -4,6 +4,6 @@ public interface SessionManagementOutputPort {
 
   Object getSession(String sessionId);
 
-  void updateSession(String sessionId, Object object);
+  Object updateSession(String sessionId, Object object);
 
 }

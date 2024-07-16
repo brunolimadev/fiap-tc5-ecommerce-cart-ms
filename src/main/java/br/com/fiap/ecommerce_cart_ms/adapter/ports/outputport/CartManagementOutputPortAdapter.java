@@ -8,6 +8,7 @@ import br.com.fiap.ecommerce_cart_ms.ports.exception.OutputPortException;
 import br.com.fiap.ecommerce_cart_ms.ports.outputport.CartManagementOutputPort;
 import br.com.fiap.ecommerce_cart_ms.ports.outputport.ItemManagementOutputPort;
 import br.com.fiap.ecommerce_cart_ms.ports.outputport.SessionManagementOutputPort;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,11 +44,13 @@ public class CartManagementOutputPortAdapter implements CartManagementOutputPort
 
       updateItemAndAddItemsList(itemModel, itemEntity, sessionId);
 
-      var response = CartEntity.builder().totalOrder(calculateTotalOrder()).items(items).build();
+      var cardEntity = CartEntity.builder().totalOrder(calculateTotalOrder()).items(items).build();
 
-      sessionManagementOutputPort.updateSession(sessionId, response);
+      var sessionData = sessionManagementOutputPort.updateSession(sessionId, cardEntity);
 
-      return response;
+      var jsonObject = new JSONObject(sessionData);
+
+      return (CartEntity) jsonObject.get("sessionData");
 
     } catch (EntityException | OutputPortException exception) {
 

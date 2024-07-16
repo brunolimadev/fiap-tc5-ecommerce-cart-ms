@@ -23,7 +23,7 @@ public class SessionManagementOutputPortAdapter implements SessionManagementOutp
   }
 
   @Override
-  public void updateSession(String sessionId, Object object) {
+  public Object updateSession(String sessionId, Object object) {
 
     Mono<Object> response = client.put()
             .uri("/ecommerce-management/api/v1/sessions")
@@ -37,7 +37,7 @@ public class SessionManagementOutputPortAdapter implements SessionManagementOutp
             .retrieve()
             .bodyToMono(Object.class);
 
-    response.block();
+    return response.block();
 
   }
 
