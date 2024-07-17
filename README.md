@@ -1,9 +1,9 @@
-# ⭐ FIAP - Pós Tech (Fase 5) - **API de gerenciamento de items de ecommerce**
+# ⭐ FIAP - Pós Tech (Fase 5) - **API de gerenciamento de carrinho de compras de ecommerce**
 
 ---
 
 ## 💥 Descrição
-- O projeto "Gerenciamento de items de ecommerce" foi criado como critério de avaliação na 5ª fase da pós tech FIAP
+- O projeto "Gerenciamento de carrinho de compras de ecommerce" foi criado como critério de avaliação na 5ª fase da pós tech FIAP
 
 ## 🛠️ Funcionalidades
 
@@ -38,7 +38,7 @@
 - http://localhost:8083/ecommerce-management/api/v1/swagger-ui/index.html#/
 
 ## 😎 Collection
-- [fiap-ecommerce-cart.postman_collection.zip](https://github.com/brunolimadev/fiap-tc5-ecommerce-item-ms/blob/7a6ec2311ccd4f857cef9eb7724720ce6d998216/api-test-files/fiap-ecommerce-items.postman_collection.zip?raw=true)
+- [fiap-ecommerce-cart.postman_collection.zip](https://github.com/brunolimadev/fiap-tc5-ecommerce-cart-ms/blob/develop/api-test-files/fiap-ecommerce-cart.postman_collection.zip?raw=true)
   - **Obs.:** para utilizar a coleção primeiro é preciso descompactar o arquivo e importá-lo no Postman
 
 ## ⭐ Squad
