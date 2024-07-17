@@ -5,6 +5,7 @@ import br.com.fiap.ecommerce_cart_ms.domain.exception.EntityException;
 import br.com.fiap.ecommerce_cart_ms.ports.exception.OutputPortException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -12,7 +13,7 @@ import static br.com.fiap.ecommerce_cart_ms.utils.MessageEnumUtils.*;
 
 
 @ControllerAdvice
-public class ItemControllerAdvice {
+public class CartControllerAdvice {
 
   @ExceptionHandler(
           {
@@ -36,9 +37,10 @@ public class ItemControllerAdvice {
   @ExceptionHandler(
           {
                   HttpMessageNotReadableException.class,
+                  MissingRequestHeaderException.class
           }
   )
-  public ResponseEntity<MessageEntity> handleBadRequestWithSpringException(RuntimeException exception) {
+  public ResponseEntity<MessageEntity> handleBadRequestWithSpringException(Exception exception) {
 
     return ResponseEntity
             .badRequest()

@@ -11,8 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("cart")
 @Tag(name = "Cart Controller", description = "Customer can manage cart through API resources")
@@ -28,30 +26,34 @@ public class CartController {
 
   }
 
-  @Operation(summary = "Create Cart")
+  @Operation(summary = "Add cart item")
   @ApiResponse(
           responseCode = "201",
           description = "Returns a created Cart"
   )
   @PostMapping
   public ResponseEntity<CartEntity> addCartItem(
-          @RequestBody ItemEntity itemEntity
+          @RequestBody ItemEntity itemEntity,
+          @RequestHeader("session-id") String sessionId
   ) throws OutputPortException {
 
     return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(cartManagementOutputPort.addCartItem(itemEntity));
+            .body(cartManagementOutputPort.addCartItem(itemEntity, sessionId));
 
   }
 
-  @Operation(summary = "Remove a item by id")
-  @ApiResponse(responseCode = "200", description = "Returns a removed item")
+  @Operation(summary = "Remove cart item by id")
+  @ApiResponse(responseCode = "200", description = "Returns a updated cart")
   @DeleteMapping(value = "{item_id}")
-  public ResponseEntity<CartEntity> removeCartItem(@PathVariable("item_id") Long id) throws OutputPortException {
+  public ResponseEntity<CartEntity> removeCartItem(
+          @PathVariable("item_id") Long id,
+          @RequestHeader("session-id") String sessionId
+  ) throws OutputPortException {
 
     return  ResponseEntity
             .status(HttpStatus.OK)
-            .body(cartManagementOutputPort.removeCartItem(id));
+            .body(cartManagementOutputPort.removeCartItem(id, sessionId));
 
   }
 

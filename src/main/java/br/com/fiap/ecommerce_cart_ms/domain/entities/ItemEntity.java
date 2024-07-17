@@ -20,7 +20,7 @@ public class ItemEntity {
           Long id, String description, Double price, Integer quantity
   ) {
 
-    validateValues(description, price, quantity);
+    validateValues(quantity);
 
     this.id = id;
     this.description = description;
@@ -30,11 +30,11 @@ public class ItemEntity {
   }
 
   private void validateValues (
-          String description, Double price, Integer quantity
+          Integer quantity
   ) throws EntityException {
 
     if (
-            description == null || price == null || quantity == null
+            quantity == null
     ) {
 
       throw new EntityException(ENTITY_EXCEPTION.getMessage());
@@ -42,7 +42,7 @@ public class ItemEntity {
     }
 
     if (
-            description.isEmpty() || price <= 0 || quantity <= 0
+            quantity <= 0
     ) {
 
       throw new EntityException(ENTITY_EXCEPTION.getMessage());
