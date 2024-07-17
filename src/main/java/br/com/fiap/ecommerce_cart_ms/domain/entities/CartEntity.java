@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Hidden;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -13,6 +14,6 @@ public class CartEntity {
   @Hidden
   private Long id;
   private Double totalOrder;
-  private List<ItemEntity> items;
+  private List<ItemEntity> items = new ArrayList<>();
 
 }

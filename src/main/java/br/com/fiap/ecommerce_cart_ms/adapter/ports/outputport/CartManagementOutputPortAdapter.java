@@ -8,9 +8,10 @@ import br.com.fiap.ecommerce_cart_ms.ports.exception.OutputPortException;
 import br.com.fiap.ecommerce_cart_ms.ports.outputport.CartManagementOutputPort;
 import br.com.fiap.ecommerce_cart_ms.ports.outputport.ItemManagementOutputPort;
 import br.com.fiap.ecommerce_cart_ms.ports.outputport.SessionManagementOutputPort;
+import com.google.gson.Gson;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -18,7 +19,6 @@ import static br.com.fiap.ecommerce_cart_ms.utils.MessageEnumUtils.*;
 
 public class CartManagementOutputPortAdapter implements CartManagementOutputPort {
 
-  private static final List<ItemEntity> items = new ArrayList<>();
   private final ItemManagementOutputPort itemManagementOutputPort;
   private final SessionManagementOutputPort sessionManagementOutputPort;
 
@@ -36,21 +36,20 @@ public class CartManagementOutputPortAdapter implements CartManagementOutputPort
 
     try {
 
-      validateActiveSession(sessionManagementOutputPort.getSession(sessionId));
+      var sessionData = sessionManagementOutputPort.getSession(sessionId);
+      validateSessionValues(sessionData);
+
+      var cart = createNewCartOrGetSessionCart(sessionData);
 
       var itemModel = itemManagementOutputPort.getItem(itemEntity.getId(), sessionId);
-
       validateStoreQuantityAndCardItemQuantity(itemModel, itemEntity);
+      updateItemAndAddItemsList(itemModel, itemEntity, cart, sessionId);
 
-      updateItemAndAddItemsList(itemModel, itemEntity, sessionId);
+      var items = cart.getItems();
+      var response = CartEntity.builder().totalOrder(calculateTotalOrder(items)).items(items).build();
+      sessionManagementOutputPort.updateSession(sessionId, response);
 
-      var cardEntity = CartEntity.builder().totalOrder(calculateTotalOrder()).items(items).build();
-
-      var sessionData = sessionManagementOutputPort.updateSession(sessionId, cardEntity);
-
-      var jsonObject = new JSONObject(sessionData);
-
-      return (CartEntity) jsonObject.get("sessionData");
+      return response;
 
     } catch (EntityException | OutputPortException exception) {
 
@@ -69,14 +68,16 @@ public class CartManagementOutputPortAdapter implements CartManagementOutputPort
 
     try {
 
-      validateActiveSession(sessionManagementOutputPort.getSession(sessionId));
+      var sessionData = sessionManagementOutputPort.getSession(sessionId);
+      validateSessionValues(sessionData);
+
+      var cart = createNewCartOrGetSessionCart(sessionData);
 
       var itemModel = itemManagementOutputPort.getItem(id, sessionId);
+      updateItemAndRemoveItemsList(id, itemModel, cart, sessionId);
 
-      updateItemAndRemoveItemsList(id, itemModel, sessionId);
-
-      var response = CartEntity.builder().totalOrder(calculateTotalOrder()).items(items).build();
-
+      var items = cart.getItems();
+      var response = CartEntity.builder().totalOrder(calculateTotalOrder(items)).items(items).build();
       sessionManagementOutputPort.updateSession(sessionId, response);
 
       return response;
@@ -89,11 +90,38 @@ public class CartManagementOutputPortAdapter implements CartManagementOutputPort
 
   }
 
-  private void validateActiveSession(Object object) {
+  private CartEntity createNewCartOrGetSessionCart(Object sessionData, ItemEntity) {
+
+    var sessionJsonString = new Gson().toJson(sessionData);
+    var sessionJsonObject = new JSONObject(sessionJsonString)
+            .getJSONObject("sessionData");
+
+    if (!sessionJsonObject.has("shopping_cart")) {
+
+      return CartEntity.builder().items(Collections.emptyList()).build();
+
+    }
+
+    return getSessionCart(sessionData);
+
+  }
+
+  private CartEntity getSessionCart(Object sessionData) {
+
+    var sessionJsonString = new Gson().toJson(sessionData);
+    var sessionJsonObject = new JSONObject(sessionJsonString)
+            .getJSONObject("sessionData")
+            .getJSONObject("shopping_cart");
+
+    return new Gson().fromJson(sessionJsonObject.toString(), CartEntity.class);
+
+  }
+
+  private void validateSessionValues(Object object) {
 
     if (object == null) {
 
-      throw new OutputPortException("Usuario com sessao inativa");
+      throw new OutputPortException("Usuario sem dados de sessão");
 
     }
 
@@ -113,33 +141,37 @@ public class CartManagementOutputPortAdapter implements CartManagementOutputPort
 
   }
 
-  private void updateItemAndAddItemsList(ItemModel itemModel, ItemEntity itemEntity, String sessionId) {
+  private void updateItemAndAddItemsList(
+          ItemModel itemModel, ItemEntity itemEntity,
+          CartEntity sessionCart, String sessionId) {
 
-    itemModel.setStoreQuantity(itemModel.getStoreQuantity() - itemEntity.getQuantity());
+      itemModel.setStoreQuantity(itemModel.getStoreQuantity() - itemEntity.getQuantity());
 
-    itemManagementOutputPort.updateItem(itemEntity.getId(), itemModel, sessionId);
+      itemManagementOutputPort.updateItem(itemEntity.getId(), itemModel, sessionId);
 
-    var cardItem = ItemEntity.builder()
-            .id(itemModel.getId())
-            .price(itemModel.getPrice())
-            .description(itemModel.getDescription())
-            .quantity(itemEntity.getQuantity())
-            .build();
+      var cardItem = ItemEntity.builder()
+              .id(itemModel.getId())
+              .price(itemModel.getPrice())
+              .description(itemModel.getDescription())
+              .quantity(itemEntity.getQuantity())
+              .build();
 
-    items.add(cardItem);
+      sessionCart.getItems().add(cardItem);
 
   }
 
-  private void updateItemAndRemoveItemsList(Long id, ItemModel itemModel, String sessionId) {
+  private void updateItemAndRemoveItemsList(
+          Long id, ItemModel itemModel,
+          CartEntity sessionCart, String sessionId) {
 
     assert itemModel != null;
 
-    var removeItem = items.stream()
+    var removeItem = sessionCart.getItems().stream()
             .filter(itemEntity -> Objects.equals(itemEntity.getId(), id))
             .findAny()
             .orElse(null);
 
-    items.remove(removeItem);
+    sessionCart.getItems().remove(removeItem);
 
     assert removeItem != null;
 
@@ -149,7 +181,7 @@ public class CartManagementOutputPortAdapter implements CartManagementOutputPort
 
   }
 
-  private Double calculateTotalOrder() {
+  private Double calculateTotalOrder(List<ItemEntity> items) {
 
     var totalOrder = 0.0;
 
