@@ -8,7 +8,7 @@ public class CartEntityMock {
 
     return CartEntity
             .builder()
-            .id(1L)
+            .id("")
             .totalOrder(0.0)
             .items(ItemEntityMock.getList())
             .build();
