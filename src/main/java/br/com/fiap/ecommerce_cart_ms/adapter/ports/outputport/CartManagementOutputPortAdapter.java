@@ -11,9 +11,7 @@ import br.com.fiap.ecommerce_cart_ms.ports.outputport.SessionManagementOutputPor
 import com.google.gson.Gson;
 import org.json.JSONObject;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static br.com.fiap.ecommerce_cart_ms.utils.MessageEnumUtils.*;
 
@@ -45,11 +43,12 @@ public class CartManagementOutputPortAdapter implements CartManagementOutputPort
       validateStoreQuantityAndCardItemQuantity(itemModel, itemEntity);
       updateItemAndAddItemsList(itemModel, itemEntity, cart, sessionId);
 
-      var items = cart.getItems();
-      var response = CartEntity.builder().totalOrder(calculateTotalOrder(items)).items(items).build();
-      sessionManagementOutputPort.updateSession(sessionId, response);
+      cart.setId(UUID.randomUUID().toString());
+      cart.setTotalOrder(calculateTotalOrder(cart.getItems()));
 
-      return response;
+      sessionManagementOutputPort.updateSession(sessionId, cart);
+
+      return cart;
 
     } catch (EntityException | OutputPortException exception) {
 
@@ -76,11 +75,12 @@ public class CartManagementOutputPortAdapter implements CartManagementOutputPort
       var itemModel = itemManagementOutputPort.getItem(id, sessionId);
       updateItemAndRemoveItemsList(id, itemModel, cart, sessionId);
 
-      var items = cart.getItems();
-      var response = CartEntity.builder().totalOrder(calculateTotalOrder(items)).items(items).build();
-      sessionManagementOutputPort.updateSession(sessionId, response);
+      cart.setId(UUID.randomUUID().toString());
+      cart.setTotalOrder(calculateTotalOrder(cart.getItems()));
 
-      return response;
+      sessionManagementOutputPort.updateSession(sessionId, cart);
+
+      return cart;
 
     } catch (Exception exception) {
 
@@ -98,7 +98,7 @@ public class CartManagementOutputPortAdapter implements CartManagementOutputPort
 
     if (!sessionJsonObject.has("shopping_cart")) {
 
-      return CartEntity.builder().items(Collections.emptyList()).build();
+      return CartEntity.builder().items(new ArrayList<>()).build();
 
     }
 
