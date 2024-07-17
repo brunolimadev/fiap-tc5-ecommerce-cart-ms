@@ -29,7 +29,7 @@ public class CartController {
   @Operation(summary = "Add cart item")
   @ApiResponse(
           responseCode = "201",
-          description = "Returns a created Cart"
+          description = "Returns updated cart details"
   )
   @PostMapping
   public ResponseEntity<CartEntity> addCartItem(
@@ -44,7 +44,7 @@ public class CartController {
   }
 
   @Operation(summary = "Remove cart item by id")
-  @ApiResponse(responseCode = "200", description = "Returns a updated cart")
+  @ApiResponse(responseCode = "200", description = "Returns updated cart details")
   @DeleteMapping(value = "{item_id}")
   public ResponseEntity<CartEntity> removeCartItem(
           @PathVariable("item_id") Long id,
