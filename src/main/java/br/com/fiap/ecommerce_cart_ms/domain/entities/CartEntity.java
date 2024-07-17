@@ -14,6 +14,6 @@ public class CartEntity {
   @Hidden
   private Long id;
   private Double totalOrder;
-  private List<ItemEntity> items = new ArrayList<>();
+  private List<ItemEntity> items;
 
 }
