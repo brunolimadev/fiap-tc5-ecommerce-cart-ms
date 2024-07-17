@@ -90,7 +90,7 @@ public class CartManagementOutputPortAdapter implements CartManagementOutputPort
 
   }
 
-  private CartEntity createNewCartOrGetSessionCart(Object sessionData, ItemEntity) {
+  private CartEntity createNewCartOrGetSessionCart(Object sessionData) {
 
     var sessionJsonString = new Gson().toJson(sessionData);
     var sessionJsonObject = new JSONObject(sessionJsonString)
