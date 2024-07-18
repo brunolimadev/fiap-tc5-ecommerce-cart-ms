@@ -24,12 +24,11 @@ class ItemEntityTest {
   }
 
   @Test
-  void shouldThrowEntityExceptionTryingCreateItemEntityWithNullDescription() {
+  void shouldThrowEntityExceptionTryingCreateItemEntityWithNullQuantity() {
 
     assertThatThrownBy(() -> ItemEntity
             .builder()
             .price(200.0)
-            .quantity(1)
             .build()
     )
             .isInstanceOf(EntityException.class)
@@ -38,13 +37,13 @@ class ItemEntityTest {
   }
 
   @Test
-  void shouldThrowEntityExceptionTryingCreateItemEntityWithPriceZero() {
+  void shouldThrowEntityExceptionTryingCreateItemEntityWithQuantityZero() {
 
     assertThatThrownBy(() -> ItemEntity
             .builder()
             .description("Camisa polo")
             .price(0.0)
-            .quantity(1)
+            .quantity(0)
             .build()
     )
             .isInstanceOf(EntityException.class)
