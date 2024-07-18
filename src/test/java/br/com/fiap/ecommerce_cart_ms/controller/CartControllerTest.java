@@ -13,9 +13,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
@@ -34,12 +38,22 @@ class CartControllerTest {
   @MockBean
   private CartManagementOutputPort cartManagementOutputPort;
 
+  private HttpHeaders httpHeaders;
+
   private CartEntity cartEntity;
 
   private ItemEntity itemEntity;
 
   @BeforeEach
   public void init () {
+
+    Map<String, String> headers = new HashMap<>();
+
+    headers.put("session-id", "aaaabacc");
+
+    httpHeaders = new HttpHeaders();
+
+    httpHeaders.setAll(headers);
 
     cartEntity = CartEntityMock.get();
     itemEntity = ItemEntityMock.get();
@@ -54,6 +68,7 @@ class CartControllerTest {
 
     //Act
     var response = mockMvc.perform(post("http://localhost:8080/cart")
+            .headers(httpHeaders)
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(itemEntity)));
 
@@ -72,6 +87,7 @@ class CartControllerTest {
 
     //Act
     var response = mockMvc.perform(delete("http://localhost:8080/cart/1")
+            .headers(httpHeaders)
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(itemEntity)));
 
