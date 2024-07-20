@@ -12,9 +12,9 @@
 	</parent>
 
 	<groupId>br.com.fiap</groupId>
-	<artifactId>ecommerce-cart-ms</artifactId>
-	<version>1.0.1-SNAPSHOT</version>
-	<name>ecommerce-cart-ms</name>
+	<artifactId>fiap-tc5-ecommerce-cart-ms</artifactId>
+	<version>1.0.0</version>
+	<name>fiap-tc5-ecommerce-cart-ms</name>
 	<description>Microservice responsible for managing the e-commerce shopping cart.</description>
 	<url/>
 
