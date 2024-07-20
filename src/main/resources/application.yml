@@ -5,3 +5,8 @@ server:
 spring:
   application:
     name: ecommerce-cart-ms
+application:
+  session:
+    host-url: ${SESSION_URL:http://localhost:8085}
+  item:
+    host-url: ${ITEM_URL:http://localhost:8082}
